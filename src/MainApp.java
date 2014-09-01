@@ -348,7 +348,7 @@ public class MainApp extends javax.swing.JFrame {
                         total += bytesRead;
                         output.write(buffer, 0, bytesRead);
                         cost = System.currentTimeMillis() - start;
-                        if (cost > 0 && System.currentTimeMillis() % 500 == 0) {
+                        if ((cost > 0) && (System.currentTimeMillis() % 2 == 0)) {
                             long speed = total / cost;
                             jLabel9.setText(speed + " KB/s");
                         }
