@@ -341,16 +341,25 @@ public class MainApp extends javax.swing.JFrame {
 
                     int bytesRead = 0;
 
+                    total = 0;
+                    start = System.currentTimeMillis();
+
                     while ((bytesRead = file.read(buffer)) > 0) {
+                        total += bytesRead;
                         output.write(buffer, 0, bytesRead);
+                        cost = System.currentTimeMillis() - start;
+                        if (cost > 0 && System.currentTimeMillis() % 500 == 0) {
+                            long speed = total / cost;
+                            jLabel9.setText(speed + " KB/s");
+                        }
+                        jProgressBar1.setValue((int) ((total * 100) / filesize));
                     }
 
+                    jLabel11.setText("Complete!");
                     output.close();
                     file.close();
                     sk.close();
 
-                    jLabel11.setText("Complete!");
-                    jProgressBar1.setValue(100);
                 }
             } catch (IOException ex) {
                 /* Catch any errors */
@@ -361,8 +370,9 @@ public class MainApp extends javax.swing.JFrame {
 
         @Override
         protected void done() {
-            jLabel3.setText("Ready to start!");
-            jButton2.setEnabled(true);
+            jButton4.setEnabled(true);
+            jProgressBar1.setValue(100);
+
         }
     }
 
@@ -408,11 +418,14 @@ public class MainApp extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         fileDlg = new JFileChooser();
         fileDlg.showOpenDialog(this);
-        filename = fileDlg.getSelectedFile().getAbsolutePath();
+        File x = fileDlg.getSelectedFile();
+        filesize = x.length();
+        filename = x.getAbsolutePath();
         jTextField3.setText(filename);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        jButton4.setEnabled(false);
         jLabel11.setText("Sending...");
         new sendingFile().execute();
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -482,4 +495,5 @@ public class MainApp extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     JFileChooser fileDlg;
     String filename;
+    long start, cost, speed, total, filesize;
 }
