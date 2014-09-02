@@ -36,41 +36,47 @@ public class MainApp extends javax.swing.JFrame {
 
     /**
      * Creates new form MainApp
+     *
      * @throws java.io.FileNotFoundException
      */
     public MainApp() throws FileNotFoundException, IOException {
-        
+
         /* Updater Script */
-        
         // Remove old files
         File updater = new File("Updater.jar");
-        if(updater.exists()){
+        if (updater.exists()) {
             updater.delete();
         }
         File version = new File("version.txt");
-        if(version.exists()){
+        if (version.exists()) {
             version.delete();
         }
-        
+
         // Check if update exists
-        try {
-            URL website = new URL("http://aica.org.ro/images/FTP/version.txt");
-            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            FileOutputStream fos = new FileOutputStream("version.txt");
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        URL website = new URL("http://aica.org.ro/images/FTP/version.txt");
+        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+        FileOutputStream fos = new FileOutputStream("version.txt");
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
         BufferedReader x = new BufferedReader(new FileReader("version.txt"));
         String latestVersion = x.readLine();
         if (!myVersion.equals(latestVersion)) {
             // Start update
             System.out.println("Update available");
+            // Get updater from server
+            URL srv = new URL("http://aica.org.ro/images/FTP/Updater.jpg");
+            ReadableByteChannel rbc2 = Channels.newChannel(srv.openStream());
+            FileOutputStream fos2 = new FileOutputStream("updater.jar");
+            fos2.getChannel().transferFrom(rbc2, 0, Long.MAX_VALUE);
+            
+            // Start the updater
+            ProcessBuilder upd = new ProcessBuilder("", "-jar", "updater.jar");
+            Process p = upd.start();
+            
+            System.exit(0);
+
         }
-        
+
         /* End of Updater Script */
         initComponents();
     }
@@ -333,7 +339,7 @@ public class MainApp extends javax.swing.JFrame {
 
             /* Accept the sk */
             Socket sk = server.accept();
-            
+
             jLabel3.setText("Client " + sk.getInetAddress() + " accepted.");
             InputStream input = sk.getInputStream();
             BufferedReader inReader = new BufferedReader(new InputStreamReader(sk.getInputStream()));
@@ -568,7 +574,7 @@ public class MainApp extends javax.swing.JFrame {
     String filename;
     long start, cost, speed, total, filesize;
     long sstart, scost, sspeed, stotal;
-    
+
     /* Updater Variables */
     private final String myVersion = "113";
 }
