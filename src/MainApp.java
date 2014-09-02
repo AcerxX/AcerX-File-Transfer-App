@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,10 +16,11 @@ import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 /*
@@ -33,8 +36,42 @@ public class MainApp extends javax.swing.JFrame {
 
     /**
      * Creates new form MainApp
+     * @throws java.io.FileNotFoundException
      */
-    public MainApp() {
+    public MainApp() throws FileNotFoundException, IOException {
+        
+        /* Updater Script */
+        
+        // Remove old files
+        File updater = new File("Updater.jar");
+        if(updater.exists()){
+            updater.delete();
+        }
+        File version = new File("version.txt");
+        if(version.exists()){
+            version.delete();
+        }
+        
+        // Check if update exists
+        try {
+            URL website = new URL("http://aica.org.ro/images/FTP/version.txt");
+            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+            FileOutputStream fos = new FileOutputStream("version.txt");
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        BufferedReader x = new BufferedReader(new FileReader("version.txt"));
+        String latestVersion = x.readLine();
+        if (!myVersion.equals(latestVersion)) {
+            // Start update
+            System.out.println("Update available");
+        }
+        
+        /* End of Updater Script */
         initComponents();
     }
 
@@ -492,7 +529,11 @@ public class MainApp extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainApp().setVisible(true);
+                try {
+                    new MainApp().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -527,4 +568,7 @@ public class MainApp extends javax.swing.JFrame {
     String filename;
     long start, cost, speed, total, filesize;
     long sstart, scost, sspeed, stotal;
+    
+    /* Updater Variables */
+    private final String myVersion = "113";
 }
