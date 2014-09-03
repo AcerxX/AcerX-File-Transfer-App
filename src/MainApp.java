@@ -13,12 +13,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -463,35 +466,41 @@ public class MainApp extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
-        /* Get External IP */
         try {
-            URL whatismyip = new URL("http://checkip.amazonaws.com");
-            BufferedReader in = null;
+            /* Get External IP */
             try {
-                in = new BufferedReader(new InputStreamReader(
-                        whatismyip.openStream()));
-                String ip = in.readLine();
-                jTextField1.setText(ip);
-            } catch (IOException ex) {
-                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
+                URL whatismyip = new URL("http://checkip.amazonaws.com");
+                BufferedReader in = null;
+                try {
+                    in = new BufferedReader(new InputStreamReader(
+                            whatismyip.openStream()));
+                    String ip = in.readLine();
+                    jTextField1.setText(ip);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException e) {
+                        }
                     }
                 }
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        
-        /* Get internal IP */
-        try {
-            jTextField4.setText(InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException ex) {
+
+            /* Get internal IP */
+            int k = 0;
+            Enumeration e = NetworkInterface.getNetworkInterfaces();
+            NetworkInterface n = (NetworkInterface) e.nextElement();
+            n = (NetworkInterface) e.nextElement();
+            n = (NetworkInterface) e.nextElement();
+            Enumeration ee = n.getInetAddresses();
+            InetAddress i = (InetAddress) ee.nextElement();
+            jTextField4.setText(i.getHostAddress());
+
+        } catch (SocketException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -588,7 +597,7 @@ public class MainApp extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
-    
+
     /* Main App Variables */
     JFileChooser fileDlg;
     String filename;
