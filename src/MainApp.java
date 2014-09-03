@@ -605,5 +605,5 @@ public class MainApp extends javax.swing.JFrame {
     long sstart, scost, sspeed, stotal;
 
     /* Updater Variables */
-    private final String myVersion = "141";
+    private final String myVersion = "142";
 }
