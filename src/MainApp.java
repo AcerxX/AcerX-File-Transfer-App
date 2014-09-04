@@ -18,7 +18,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
@@ -118,7 +117,7 @@ public class MainApp extends javax.swing.JFrame {
         jTextField4 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("AcerX File Transfer App v1.4.1");
+        setTitle("AcerX File Transfer App v1.4.3");
         setResizable(false);
 
         jLabel5.setText("IP Address:");
@@ -378,7 +377,7 @@ public class MainApp extends javax.swing.JFrame {
                 /* Write to the file */
                 wr.write(buffer, 0, bytesReceived);
                 scost = System.currentTimeMillis() - start;
-                if ((scost > 0) && (System.currentTimeMillis() % 2 == 0)) {
+                if (scost > 0) {
                     sspeed = stotal / scost;
                     jLabel13.setText(sspeed + " KB/s");
                 }
@@ -605,5 +604,5 @@ public class MainApp extends javax.swing.JFrame {
     long sstart, scost, sspeed, stotal;
 
     /* Updater Variables */
-    private final String myVersion = "142";
+    private final String myVersion = "143";
 }
